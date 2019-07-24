@@ -36,7 +36,7 @@ public class XmlBlock {
         header += ">";
         printStream.println(header);
         for (XmlBlock block : children) {
-            block.print(printStream, tab + "  ");
+            block.print(printStream, tab + "\t");
         }
         printStream.println(tab + "</" + name + ">");
     }

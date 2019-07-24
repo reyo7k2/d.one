@@ -15,15 +15,13 @@ public class Main {
                                                      int MsgIdEnd,
                                                      int AppRegNumberEnd,
                                                      int ClientRegNumberEnd,
-                                                     int SubAppRegNumberEnd,
-                                                     int ContractNumberEnd) {
+                                                     int SubAppRegNumberEnd) {
 
         XmlBlock Product = new XmlBlock("Product");
         Product.addChild("ProductCode1", "LESSOR_W");
 
         XmlBlock ContractIDT = new XmlBlock("ContractIDT");
-        ContractIDT.addChild("ContractNumber", ContractNumberStart + ContractNumberEnd);
-        ContractNumberEnd++;
+        ContractIDT.addChild("ContractNumber");
 
         XmlBlock Contract = new XmlBlock("Contract");
         Contract.addChild(ContractIDT);
@@ -40,13 +38,14 @@ public class Main {
         SubApp.addChild("ActionType", "Add");
         SubApp.addChild(ContractData);
 
-        XmlBlock SubAppList = new XmlBlock("SubAppList");
+        XmlBlock SubAppList = new XmlBlock("SubApplList");
         SubAppList.addChild(SubApp);
 
         XmlBlock ClientInfo = new XmlBlock("ClientInfo");
-        ClientInfo.addChild("ShortName", shortName);
         ClientInfo.addChild("ClientNumber", login + "_LESSOR");
         ClientInfo.addChild("RegNumber", ClientRegNumberStart + ClientRegNumberEnd);
+        ClientInfo.addChild("ShortName", shortName);
+
         ClientRegNumberEnd++;
 
         XmlBlock Client = new XmlBlock("Client");
@@ -56,6 +55,18 @@ public class Main {
         XmlBlock Data = new XmlBlock("Data");
         Data.addChild(Client);
 
+        XmlBlock Parm1 = new XmlBlock("Parm");
+        Parm1.addChild("ParmCode", "AcceptRq");
+        Parm1.addChild("Value", "Y");
+
+        XmlBlock Parm2 = new XmlBlock("Parm");
+        Parm2.addChild("ParmCode", "Response");
+        Parm2.addChild("Value", "Y");
+
+        XmlBlock ResultDtls = new XmlBlock("ResultDtls");
+        ResultDtls.addChild(Parm1);
+        ResultDtls.addChild(Parm2);
+
         XmlBlock Application = new XmlBlock("Application");
         Application.addChild("RegNumber", AppRegNumberStart + AppRegNumberEnd);
         AppRegNumberEnd++;
@@ -63,6 +74,7 @@ public class Main {
         Application.addChild("OrderDprt", "0101");
         Application.addChild("ObjectType", "Client");
         Application.addChild("ActionType", "Add");
+        Application.addChild(ResultDtls);
         Application.addChild("ProductGroup", "ACQRET");
         Application.addChild(Data);
         Application.addChild(SubAppList);
@@ -89,15 +101,13 @@ public class Main {
                                                      int MsgIdEnd,
                                                      int AppRegNumberEnd,
                                                      int ClientRegNumberEnd,
-                                                     int SubAppRegNumberEnd,
-                                                     int ContractNumberEnd) {
+                                                     int SubAppRegNumberEnd) {
 
         XmlBlock Product = new XmlBlock("Product");
         Product.addChild("ProductCode1", "LESSEE_W");
 
         XmlBlock ContractIDT = new XmlBlock("ContractIDT");
-        ContractIDT.addChild("ContractNumber", ContractNumberStart + ContractNumberEnd);
-        ContractNumberEnd++;
+        ContractIDT.addChild("ContractNumber");
 
         XmlBlock Contract = new XmlBlock("Contract");
         Contract.addChild(ContractIDT);
@@ -114,21 +124,34 @@ public class Main {
         SubApp.addChild("ActionType", "Add");
         SubApp.addChild(ContractData);
 
-        XmlBlock SubAppList = new XmlBlock("SubAppList");
+        XmlBlock SubAppList = new XmlBlock("SubApplList");
         SubAppList.addChild(SubApp);
 
         XmlBlock ClientInfo = new XmlBlock("ClientInfo");
-        ClientInfo.addChild("ShortName", shortName);
         ClientInfo.addChild("ClientNumber", login + "_LESSEE");
         ClientInfo.addChild("RegNumber", ClientRegNumberStart + ClientRegNumberEnd);
+        ClientInfo.addChild("ShortName", shortName);
+
         ClientRegNumberEnd++;
 
         XmlBlock Client = new XmlBlock("Client");
-        Client.addChild("ClientType", "M_RES");
+        Client.addChild("ClientType", "PR");
         Client.addChild(ClientInfo);
 
         XmlBlock Data = new XmlBlock("Data");
         Data.addChild(Client);
+
+        XmlBlock Parm1 = new XmlBlock("Parm");
+        Parm1.addChild("ParmCode", "AcceptRq");
+        Parm1.addChild("Value", "Y");
+
+        XmlBlock Parm2 = new XmlBlock("Parm");
+        Parm2.addChild("ParmCode", "Response");
+        Parm2.addChild("Value", "Y");
+
+        XmlBlock ResultDtls = new XmlBlock("ResultDtls");
+        ResultDtls.addChild(Parm1);
+        ResultDtls.addChild(Parm2);
 
         XmlBlock Application = new XmlBlock("Application");
         Application.addChild("RegNumber", AppRegNumberStart + AppRegNumberEnd);
@@ -137,7 +160,8 @@ public class Main {
         Application.addChild("OrderDprt", "0101");
         Application.addChild("ObjectType", "Client");
         Application.addChild("ActionType", "Add");
-        Application.addChild("ProductGroup", "ACQRET");
+        Application.addChild(ResultDtls);
+        Application.addChild("ProductGroup", "ISSDEB");
         Application.addChild(Data);
         Application.addChild(SubAppList);
 
@@ -156,7 +180,7 @@ public class Main {
 
         UFXMsg.print(printStream, "");
     }
-    public static Map<String, String> ParseLessorRegisterResponce(String text) {
+    public static Map<String, String> ParseRegisterResponce(String text) {
         Map<String, String> stringStringMap = new TreeMap<>();
 
         int valueStart = text.indexOf("<MsgId>") + "<MsgId>".length();
@@ -201,10 +225,10 @@ public class Main {
         try {
             fileInputStream = new FileInputStream("responce.xml");
             GenerateLessorRegisterRequest(System.out, "User01", "login01", "2019-07-03",
-                    MsgIdEnd++, AppRegNumberEnd++, ClientRegNumberEnd++, SubAppRegNumberEnd++,  ContractNumberEnd++);
-            GenerateLessorRegisterRequest(System.out, "User02", "login02", "2019-07-04",
-                    MsgIdEnd++, AppRegNumberEnd++, ClientRegNumberEnd++, SubAppRegNumberEnd++,  ContractNumberEnd++);
-            stringStringMap = ParseLessorRegisterResponce(convertStreamToString(fileInputStream));
+                    MsgIdEnd++, AppRegNumberEnd++, ClientRegNumberEnd++, SubAppRegNumberEnd++);
+            GenerateLesseeRegisterRequest(System.out, "User02", "login02", "2019-07-04",
+                    MsgIdEnd++, AppRegNumberEnd++, ClientRegNumberEnd++, SubAppRegNumberEnd++);
+            stringStringMap = ParseRegisterResponce(convertStreamToString(fileInputStream));
             System.out.println(stringStringMap.get("RespCode"));
             System.out.println(stringStringMap.get("RespText"));
             System.out.println(stringStringMap.get("MsgId"));
