@@ -4,18 +4,31 @@ import java.util.TreeMap;
 
 public class Main {
     static final String MsgIdStart = "AAA-555-333-EEE-_";
-    static final String AppRegNumberStart = "REG_NEW_LESSOR_";
-    static  final String ClientRegNumberStart = "REG_CLIENT_";
-    static final String SubAppRegNumberStart = "REG_CONTRACT_";
+    static final String AppRegNumberStart = "REG_NEW_CLIENT_REQ_";
+    static  final String ClientRegNumberStart = "REG_NEW_CLIENT_";
+    static final String SubAppRegNumberStart = "REG_NEW_CONTRACT_";
     static final String ContractNumberStart = "XML-AA-LE-";
-    public static void GenerateLessorRegisterRequest(PrintStream printStream,
-                                                     String shortName,
+
+    /*
+     * @param printStream Stream for output.
+     * @param shortName First name and surname, glued.
+     * @param login Login used for registration.
+     * @param dateOpen Date for registration.
+     * @param msgIdEnd .Part of message identifier. Should be unique.
+     * @param appRegNumberEnd Part of application identifier. Must be unique.
+     * @param clientRegNumberEnd Part of client registration identifier. Must be unique.
+     * @param subAppRegNumberEnd Part of client registration identifier. Must be unique.
+     */
+    public static String GenerateLessorRegisterRequest(String shortName,
                                                      String login,
                                                      String dateOpen,
-                                                     int MsgIdEnd,
-                                                     int AppRegNumberEnd,
-                                                     int ClientRegNumberEnd,
-                                                     int SubAppRegNumberEnd) {
+                                                     int msgIdEnd,
+                                                     int appRegNumberEnd,
+                                                     int clientRegNumberEnd,
+                                                     int subAppRegNumberEnd) {
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(os);
 
         XmlBlock Product = new XmlBlock("Product");
         Product.addChild("ProductCode1", "LESSOR_W");
@@ -32,8 +45,8 @@ public class Main {
         ContractData.addChild(Contract);
 
         XmlBlock SubApp = new XmlBlock("Application");
-        SubApp.addChild("RegNumber", SubAppRegNumberStart + SubAppRegNumberEnd);
-        SubAppRegNumberEnd++;
+        SubApp.addChild("RegNumber", SubAppRegNumberStart + subAppRegNumberEnd);
+        subAppRegNumberEnd++;
         SubApp.addChild("ObjectType", "Contract");
         SubApp.addChild("ActionType", "Add");
         SubApp.addChild(ContractData);
@@ -43,10 +56,10 @@ public class Main {
 
         XmlBlock ClientInfo = new XmlBlock("ClientInfo");
         ClientInfo.addChild("ClientNumber", login + "_LESSOR");
-        ClientInfo.addChild("RegNumber", ClientRegNumberStart + ClientRegNumberEnd);
+        ClientInfo.addChild("RegNumber", ClientRegNumberStart + clientRegNumberEnd);
         ClientInfo.addChild("ShortName", shortName);
 
-        ClientRegNumberEnd++;
+        clientRegNumberEnd++;
 
         XmlBlock Client = new XmlBlock("Client");
         Client.addChild("ClientType", "M_RES");
@@ -68,8 +81,8 @@ public class Main {
         ResultDtls.addChild(Parm2);
 
         XmlBlock Application = new XmlBlock("Application");
-        Application.addChild("RegNumber", AppRegNumberStart + AppRegNumberEnd);
-        AppRegNumberEnd++;
+        Application.addChild("RegNumber", AppRegNumberStart + appRegNumberEnd);
+        appRegNumberEnd++;
         Application.addChild("Institution", "0001");
         Application.addChild("OrderDprt", "0101");
         Application.addChild("ObjectType", "Client");
@@ -87,21 +100,32 @@ public class Main {
         UFXMsg.addAttribute("msg_type=\"Application\"");
         UFXMsg.addAttribute("version=\"2.0\"");
         UFXMsg.addAttribute("direction=\"Rq\"");
-        UFXMsg.addChild("MsgId", MsgIdStart + MsgIdEnd);
-        MsgIdEnd++;
+        UFXMsg.addChild("MsgId", MsgIdStart + msgIdEnd);
+        msgIdEnd++;
         UFXMsg.addChild("Source app=\"WebApp\"");
         UFXMsg.addChild(MsgData);
 
         UFXMsg.print(printStream, "");
+
+        String output = null;
+        try {
+            output = os.toString("UTF8");
+        } catch (UnsupportedEncodingException e) {
+
+        }
+
+        return output;
+
     }
-    public static void GenerateLesseeRegisterRequest(PrintStream printStream,
-                                                     String shortName,
+    public static String GenerateLesseeRegisterRequest(String shortName,
                                                      String login,
                                                      String dateOpen,
                                                      int MsgIdEnd,
                                                      int AppRegNumberEnd,
                                                      int ClientRegNumberEnd,
                                                      int SubAppRegNumberEnd) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(os);
 
         XmlBlock Product = new XmlBlock("Product");
         Product.addChild("ProductCode1", "LESSEE_W");
@@ -179,6 +203,15 @@ public class Main {
         UFXMsg.addChild(MsgData);
 
         UFXMsg.print(printStream, "");
+
+        String output = null;
+        try {
+            output = os.toString("UTF8");
+        } catch (UnsupportedEncodingException e) {
+
+        }
+
+        return output;
     }
     public static Map<String, String> ParseRegisterResponce(String text) {
         Map<String, String> stringStringMap = new TreeMap<>();
@@ -224,10 +257,8 @@ public class Main {
         Map<String, String> stringStringMap;
         try {
             fileInputStream = new FileInputStream("responce.xml");
-            GenerateLessorRegisterRequest(System.out, "User01", "login01", "2019-07-03",
-                    MsgIdEnd++, AppRegNumberEnd++, ClientRegNumberEnd++, SubAppRegNumberEnd++);
-            GenerateLesseeRegisterRequest(System.out, "User02", "login02", "2019-07-04",
-                    MsgIdEnd++, AppRegNumberEnd++, ClientRegNumberEnd++, SubAppRegNumberEnd++);
+            System.out.println(GenerateLessorRegisterRequest(System.out, "User01", "login01", "2019-07-03",
+                    MsgIdEnd++, AppRegNumberEnd++, ClientRegNumberEnd++, SubAppRegNumberEnd++));
             stringStringMap = ParseRegisterResponce(convertStreamToString(fileInputStream));
             System.out.println(stringStringMap.get("RespCode"));
             System.out.println(stringStringMap.get("RespText"));
