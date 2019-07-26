@@ -12,7 +12,6 @@ public class UFX {
      * @param printStream Stream for output.
      * @param shortName First name and surname, glued.
      * @param login Login used for registration.
-     * @param dateOpen Date for registration. YYYY-MM-DD
      * @param msgIdEnd .Part of message identifier. Should be unique.
      * @param appRegNumberEnd Part of application identifier. Must be unique.
      * @param clientRegNumberEnd Part of client registration identifier. Must be unique.
@@ -21,7 +20,6 @@ public class UFX {
      */
     public static String generateLessorRegisterRequest(String shortName,
                                                        String login,
-                                                       String dateOpen,
                                                        int msgIdEnd,
                                                        int appRegNumberEnd,
                                                        int clientRegNumberEnd,
@@ -39,7 +37,6 @@ public class UFX {
         XmlBlock Contract = new XmlBlock("Contract");
         Contract.addChild(ContractIDT);
         Contract.addChild(Product);
-        Contract.addChild("DateOpen", dateOpen);
 
         XmlBlock ContractData = new XmlBlock("Data");
         ContractData.addChild(Contract);
@@ -123,7 +120,6 @@ public class UFX {
      * @param printStream Stream for output.
      * @param shortName First name and surname, glued.
      * @param login Login used for registration.
-     * @param dateOpen Date for registration. YYYY-MM-DD
      * @param msgIdEnd .Part of message identifier. Should be unique.
      * @param appRegNumberEnd Part of application identifier. Must be unique.
      * @param clientRegNumberEnd Part of client registration identifier. Must be unique.
@@ -132,7 +128,6 @@ public class UFX {
      */
     public static String GenerateLesseeRegisterRequest(String shortName,
                                                      String login,
-                                                     String dateOpen,
                                                      int msgIdEnd,
                                                      int appRegNumberEnd,
                                                      int clientRegNumberEnd,
@@ -149,7 +144,6 @@ public class UFX {
         XmlBlock Contract = new XmlBlock("Contract");
         Contract.addChild(ContractIDT);
         Contract.addChild(Product);
-        Contract.addChild("DateOpen", dateOpen);
 
         XmlBlock ContractData = new XmlBlock("Data");
         ContractData.addChild(Contract);
@@ -275,7 +269,7 @@ public class UFX {
         Map<String, String> stringStringMap;
         try {
             fileInputStream = new FileInputStream("responce.xml");
-            System.out.println(generateLessorRegisterRequest("User01", "login01", "2019-07-03",
+            System.out.println(generateLessorRegisterRequest("User01", "login01",
                     msgIdEnd++, appRegNumberEnd++, clientRegNumberEnd++, subAppRegNumberEnd++));
             stringStringMap = parseRegisterResponce(convertStreamToString(fileInputStream));
             System.out.println(stringStringMap.get("RespCode"));
